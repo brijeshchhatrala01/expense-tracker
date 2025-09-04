@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../model/usermodel.dart';
+
 class AuthenticationService {
   //instance of firebaseauth
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -14,24 +16,32 @@ class AuthenticationService {
 
   final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
   //signup a user
-  Future<UserCredential> signUpUser(String email, String password) async {
-    try {
-      UserCredential userCredential = await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
+  Future<void> signUpUser(String email, String password, String name) async {
 
-      //add user collection in database
-      _firebaseFirestore.collection('users').doc(userCredential.user!.uid).set(
-        {
-          'uid': userCredential.user!.uid,
-          'email': userCredential.user!.email,
-        },
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    try {
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
       );
-      return userCredential;
-    } on FirebaseException catch (e) {
-      throw Exception(e.code);
+
+      User? user = userCredential.user;
+      if (user != null) {
+        UserModel newUser = UserModel(
+          uid: user.uid,
+          name: name,
+          email: email,
+        );
+
+        // Store user in Firestore
+        await _firestore.collection("users").doc(user.uid).set(newUser.toMap());
+      }
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
-
   //logout
   Future<void> logoutUser() async {
     googleSignIn.signOut();
@@ -81,16 +91,19 @@ class AuthenticationService {
               await FirebaseAuth.instance.signInWithCredential(authCredential);
           User user = userCredential.user!;
           //add user collection in database
-          _firebaseFirestore
-              .collection('users')
-              .doc(userCredential.user!.uid)
-              .set(
-            {
-              'uid': userCredential.user!.uid,
-              'email': userCredential.user!.email,
-            },
+          UserModel googleUser = UserModel(
+            uid: user.uid,
+            name: user.displayName ?? '',
+            email: user.email ?? '',
+            photoUrl: user.photoURL,
           );
-        }
+
+          // Save/update in Firestore
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
+            googleUser.toMap(),
+            SetOptions(merge: true), // prevents overwriting
+          );
+                }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

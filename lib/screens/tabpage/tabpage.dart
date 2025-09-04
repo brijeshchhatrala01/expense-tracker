@@ -1,11 +1,11 @@
-
-
 import 'package:expence_tracker/constant/icons.dart';
 import 'package:expence_tracker/screens/homescreen/homescreen.dart';
 import 'package:expence_tracker/screens/profilescreen/profilescreen.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgets/custombottomnav.dart';
+import '../barchartscreen/barchartscreen.dart';
+import '../walletscreen/walletscreen.dart';
 
 class TabPage extends StatefulWidget {
   const TabPage({super.key});
@@ -17,16 +17,8 @@ class TabPage extends StatefulWidget {
 class _TabPageState extends State<TabPage> {
   int _selectedIndex = 0;
 
-  final List<String> _icons = [
-    'assets/svgicon/home-03.svg',
-    'assets/svgicon/add-square.svg',
-    'assets/svgicon/reverse-withdrawal-01 (1).svg',
-  ];
 
-  final List<Widget> _pages = [
-     HomeScreen(),
-    ProfileScreen()
-  ];
+  final List<Widget> _pages = [HomeScreen(), BarChartScreen(), WalletScreen(), ProfileScreen()];
 
   void _onTabSelected(int index) {
     setState(() {

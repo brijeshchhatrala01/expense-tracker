@@ -1,7 +1,9 @@
+import 'package:expence_tracker/widgets/customcontainerbutton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:expence_tracker/screens/loginscreen/signupscreen.dart';
-
+import '../../constant/colorsfile.dart';
 import '../../controllers/logincontroller.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -13,8 +15,9 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
-          'Login',
+          'Expense-Tracker',
           style: TextStyle(
             fontFamily: 'Montserrat-Regular',
             fontWeight: FontWeight.w600,
@@ -26,146 +29,215 @@ class LoginScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: controller.formKey,
-          child: ListView(
-            children: [
-              const Text(
-                'Welcome Back!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'Montserrat-SemiBold',
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Email
-              TextFormField(
-                controller: controller.emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(
-                    fontFamily: 'Montserrat-Medium',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
-                  ),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                value == null || value.isEmpty || !value.contains('@')
-                    ? 'Enter a valid email'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-
-              // Password with GetX toggle
-              Obx(() => TextFormField(
-                controller: controller.passwordController,
-                obscureText: controller.obscurePassword.value,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  labelStyle: const TextStyle(
-                    fontFamily: 'Montserrat-Medium',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
-                  ),
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(controller.obscurePassword.value
-                        ? Icons.visibility
-                        : Icons.visibility_off),
-                    onPressed: controller.togglePassword,
-                  ),
-                ),
-                validator: (value) => value == null || value.length < 6
-                    ? 'Password must be at least 6 characters'
-                    : null,
-              )),
-              const SizedBox(height: 24),
-
-              // Login Button
-              ElevatedButton(
-                onPressed: () => controller.login(context),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  textStyle: const TextStyle(fontSize: 16),
-                ),
-                child: const Text(
-                  'Login',
-                  style: TextStyle(
-                    fontFamily: 'Montserrat-SemiBold',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Divider
-              Row(
-                children: const [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(
-                      'or',
-                      style: TextStyle(
-                        fontFamily: 'Montserrat-Regular',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                      ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                180.verticalSpace,
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: const Text(
+                    'Welcome Back!',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Montserrat-SemiBold',
                     ),
                   ),
-                  Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Google Sign In
-              OutlinedButton.icon(
-                onPressed: () => controller.googleLogin(context),
-                icon: Image.asset(
-                  'assets/google.png',
-                  height: 24,
                 ),
-                label: const Text(
-                  'Sign in with Google',
-                  style: TextStyle(
-                    fontFamily: 'Montserrat-SemiBold',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                60.verticalSpace,
+                // Email
+                TextFormField(
+                  controller: controller.emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  cursorColor: kBlackColor,
+                  // 👈 black cursor
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: const TextStyle(
+                      fontFamily: 'Montserrat-Medium',
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      color: kBlackColor, // 👈 label color black
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      borderSide: BorderSide(
+                        color: kBlackColor,
+                        width: 1,
+                      ), // 👈 black border
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      borderSide: BorderSide(
+                        color: kBlackColor,
+                        width: 1.5,
+                      ), // 👈 black border when focused
+                    ),
+                    errorBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      borderSide: BorderSide(
+                        color: kBlackColor,
+                        width: 1,
+                      ), // 👈 black border on error
+                    ),
+                    focusedErrorBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      borderSide: BorderSide(
+                        color: kBlackColor,
+                        width: 1.5,
+                      ), // 👈 black border on error + focus
+                    ),
+                  ),
+                  validator: (value) =>
+                      value == null || value.isEmpty || !value.contains('@')
+                      ? 'Enter a valid email'
+                      : null,
+                ),
+            
+                60.verticalSpace,
+                // Password with GetX toggle
+                Obx(
+                  () => TextFormField(
+                    controller: controller.passwordController,
+                    obscureText: controller.obscurePassword.value,
+                    cursorColor: kBlackColor,
+                    // 👈 black cursor
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      labelStyle: const TextStyle(
+                        fontFamily: 'Montserrat-Medium',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        color: kBlackColor, // 👈 label text black
+                      ),
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderSide: BorderSide(
+                          color: kBlackColor,
+                          width: 1,
+                        ), // 👈 black border
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderSide: BorderSide(
+                          color: kBlackColor,
+                          width: 1.5,
+                        ), // 👈 black border when focused
+                      ),
+                      errorBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderSide: BorderSide(
+                          color: kBlackColor,
+                          width: 1,
+                        ), // 👈 black border on error
+                      ),
+                      focusedErrorBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderSide: BorderSide(
+                          color: kBlackColor,
+                          width: 1.5,
+                        ), // 👈 black border on error + focus
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          controller.obscurePassword.value
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: kBlackColor, // 👈 make eye icon black too
+                        ),
+                        onPressed: controller.togglePassword,
+                      ),
+                    ),
+                    validator: (value) => value == null || value.length < 6
+                        ? 'Password must be at least 6 characters'
+                        : null,
                   ),
                 ),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  textStyle: const TextStyle(fontSize: 16),
+                const SizedBox(height: 24),
+            
+                CustomContainerButton(
+                  onPressed: () => controller.login(context),
+                  buttonHeight: 60,
+                  buttonWidth: 370,
+                  buttonColor: kBlackColor,
+                  buttonRadius: 12,
+                  buttonText: 'Login',
+                  buttonTextFontWeight: FontWeight.w400,
+                  buttonTextFontFamily: 'Montserrat-SemiBold',
+                  buttonTextFontSize: 16,
+                  buttonTextColor: kWhiteColor,
                 ),
-              ),
-              const SizedBox(height: 12),
-
-              // Signup Navigation
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Not Registered on App?',
-                    style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400, fontFamily: 'Montserrat-Regular'),
-                  ),
-                  const SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () {
-                      Get.to(() =>  SignupScreen());
-                    },
-                    child: const Text('SignUp here',style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Montserrat-SemiBold',
-                    ),),
-                  ),
-                ],
-              ),
-            ],
+                // Login Button
+                const SizedBox(height: 12),
+            
+                // Divider
+                Row(
+                  children: const [
+                    Expanded(child: Divider()),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        'or',
+                        style: TextStyle(
+                          fontFamily: 'Montserrat-Regular',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 12),
+            
+                CustomContainerButton(
+                  onPressed: () =>controller.googleLogin(context),
+                  buttonHeight: 60,
+                  buttonWidth: 370,
+                  buttonColor: kBlackColor,
+                  buttonRadius: 12,
+                  buttonText: 'Sign in with Google',
+                  buttonTextFontWeight: FontWeight.w400,
+                  buttonTextFontFamily: 'Montserrat-SemiBold',
+                  buttonTextFontSize: 16,
+                  buttonTextColor: kWhiteColor,
+                  svgAsset: 'assets/svgIcons/google.svg',
+                ),
+            
+                const SizedBox(height: 12),
+            
+                // Signup Navigation
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Not Registered on App?',
+                      style: TextStyle(
+                        color: kBlackColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Montserrat-Regular',
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Get.to(() => SignupScreen());
+                      },
+                      child: const Text(
+                        'SignUp here',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Montserrat-SemiBold',
+                          color: kBlackColor
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

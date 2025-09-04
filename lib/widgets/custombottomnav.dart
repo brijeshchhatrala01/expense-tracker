@@ -2,6 +2,8 @@ import 'package:expence_tracker/constant/icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../constant/colorsfile.dart';
+
 
 class CustomBottomNavBar extends StatelessWidget {
   final List<String> icons;
@@ -58,13 +60,13 @@ class CustomBottomNavBar extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 4),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: isSelectedGroup ? Colors.white : Colors.transparent,
+        color: isSelectedGroup ? kWhiteColor : Colors.transparent,
         border: Border.all(color: Colors.grey.shade400),
         borderRadius: BorderRadius.circular(30),
         boxShadow: isSelectedGroup
             ? [
           BoxShadow(
-            color: Colors.black12,
+            color: kBlackColor.withOpacity(0.1),
             blurRadius: 5,
             offset: Offset(0, 2),
           ),
@@ -85,7 +87,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   iconsList[i],
                   width: 30,
                   height: 30,
-                  color: isSelectedGroup ? Colors.black : Colors.grey,
+                  color: isSelectedGroup ? kBlackColor : Colors.grey,
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:expence_tracker/screens/homescreen/homescreen.dart';
 import 'package:expence_tracker/screens/loginscreen/loginscreen.dart';
+import 'package:expence_tracker/screens/splashscreen/splashscreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,11 +27,7 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           title: 'Expense Tracker App',
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
-            useMaterial3: true,
-          ),
-          home: LoginScreen(),
+          home: SplashScreen(),
         );
       },
     );

@@ -1,139 +1,256 @@
+import 'package:expence_tracker/controllers/walletcontroller.dart';
+import 'package:expence_tracker/constant/colorsfile.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../controllers/homescreencontroller.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+
+  final WalletController walletController = Get.put(WalletController());
+  final controller = Get.put(HomeController()); // Inject Controller
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.blueAccent,
-        title: const Text("Expense Tracker"),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Balance Card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.blueAccent,
-                borderRadius: BorderRadius.circular(20),
+      body: CustomScrollView(
+        slivers: [
+          // AppBar with rounded bottom
+          SliverAppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            expandedHeight: 310,
+            floating: true,
+            pinned: true,
+            centerTitle: true,
+            title: const Text(
+              'Expense-Tracker',
+              style: TextStyle(
+                fontFamily: 'Montserrat-Regular',
+                fontWeight: FontWeight.w600,
+                fontSize: 22,
+                color: kWhiteColor,
               ),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(40),
+                    bottomRight: Radius.circular(40),
+                  ),
+                  color: kBlackColor,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 45,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Obx(
+                            () => Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  controller.greeting.value,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  controller.userName.value,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.notifications, color: Colors.white),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // ✅ Balance card
+                      Obx(
+                        () => Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: kWhiteColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Total Balance",
+                                style: TextStyle(
+                                  color: kBlackColor,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'Montserrat-Regular',
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Text(
+                                "₹ ${walletController.totalBalance.value.toStringAsFixed(2)}",
+                                style: const TextStyle(
+                                  color: kBlackColor,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'Montserrat-Regular',
+                                  fontSize: 28,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.arrow_downward,
+                                        color: Colors.green,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "Income",
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          Text(
+                                            "₹ ${walletController.lastIncome.toStringAsFixed(2)}",
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.arrow_upward,
+                                        color: Colors.red,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "Expenses",
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          Text(
+                                            "₹ ${walletController.lastExpense.toStringAsFixed(2)}",
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Body content
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text("Total Balance",
-                      style: TextStyle(color: Colors.white70, fontSize: 16)),
-                  SizedBox(height: 8),
-                  Text("₹12,000",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold)),
+                children: [
+                  // Transactions Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        "Transactions History",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text("See all", style: TextStyle(color: Colors.teal)),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // ✅ Dynamic Transactions List
+                  Obx(() {
+                    if (walletController.transactions.isEmpty) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text("No transactions yet"),
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: walletController.transactions.length,
+                      itemBuilder: (context, index) {
+                        final tx = walletController.transactions[index];
+                        final isIncome =
+                            tx["type"].toString().toLowerCase() == "income";
+
+                        return TransactionTile(
+                          icon: isIncome
+                              ? Icons.arrow_downward
+                              : Icons.arrow_upward,
+                          color: isIncome ? Colors.green : Colors.red,
+                          title: tx["category"],
+                          amount:
+                              "${isIncome ? "+" : "-"} ₹${tx["amount"].toStringAsFixed(2)}",
+                          date:
+                              "${tx["date"].day}/${tx["date"].month}/${tx["date"].year}",
+                        );
+                      },
+                    );
+                  }),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-
-            // Income & Expense Row
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.only(right: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.green[100],
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text("Income",
-                            style: TextStyle(color: Colors.green, fontSize: 16)),
-                        SizedBox(height: 8),
-                        Text("₹20,000",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.only(left: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.red[100],
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text("Expense",
-                            style: TextStyle(color: Colors.red, fontSize: 16)),
-                        SizedBox(height: 8),
-                        Text("₹8,000",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Recent Transactions
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text("Recent Transactions",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(fontWeight: FontWeight.bold)),
-            ),
-            const SizedBox(height: 12),
-
-            // Transaction List
-            Column(
-              children: const [
-                TransactionTile(
-                    icon: Icons.fastfood,
-                    color: Colors.orange,
-                    title: "Food",
-                    amount: "- ₹200",
-                    date: "2 Sep"),
-                TransactionTile(
-                    icon: Icons.directions_car,
-                    color: Colors.blue,
-                    title: "Travel",
-                    amount: "- ₹500",
-                    date: "1 Sep"),
-                TransactionTile(
-                    icon: Icons.shopping_bag,
-                    color: Colors.purple,
-                    title: "Shopping",
-                    amount: "- ₹1200",
-                    date: "31 Aug"),
-              ],
-            )
-          ],
-        ),
-      ),
-
-      // Floating Button
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to Add Expense Screen
-        },
-        backgroundColor: Colors.blueAccent,
-        child: const Icon(Icons.add, size: 28),
+          ),
+        ],
       ),
     );
   }
@@ -147,13 +264,14 @@ class TransactionTile extends StatelessWidget {
   final String amount;
   final String date;
 
-  const TransactionTile(
-      {super.key,
-        required this.icon,
-        required this.color,
-        required this.title,
-        required this.amount,
-        required this.date});
+  const TransactionTile({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.amount,
+    required this.date,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -161,13 +279,14 @@ class TransactionTile extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 6),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: kWhiteColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.grey.shade200,
-              blurRadius: 6,
-              offset: const Offset(0, 4))
+            color: Colors.grey.shade200,
+            blurRadius: 6,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Row(
@@ -182,18 +301,25 @@ class TransactionTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w600)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 Text(date, style: TextStyle(color: Colors.grey[600])),
               ],
             ),
           ),
-          Text(amount,
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: amount.contains("-") ? Colors.red : Colors.green)),
+          Text(
+            amount,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: amount.contains("-") ? Colors.red : Colors.green,
+            ),
+          ),
         ],
       ),
     );

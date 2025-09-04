@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:expence_tracker/firebase_service/firebase_auth/authentication_check.dart';
 import 'package:expence_tracker/firebase_service/firebase_auth/authentication_service.dart';
 
+import '../constant/colorsfile.dart';
+
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -16,21 +18,36 @@ class LoginController extends GetxController {
       String email = emailController.text;
       String password = passwordController.text;
 
-      // TODO: Firebase or custom logic
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Logging in as $email")),
-      );
+      AuthenticationService().signInUser(email, password).whenComplete(() {
+        Get.snackbar(
+          "Login Successful 🎉",
+          "Welcome back!",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: kWhiteColor,
+          margin: const EdgeInsets.all(12),
+          borderRadius: 10,
+          duration: const Duration(seconds: 3),
+        );
+        Get.offAll(() => AuthCheck());
+      },);
     }
   }
 
   void googleLogin(BuildContext context) {
     AuthenticationService().googleSignin(context).whenComplete(() {
+      Get.snackbar(
+        "Login Successful 🎉",
+        "Welcome back!",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.8),
+        colorText: kWhiteColor,
+        margin: const EdgeInsets.all(12),
+        borderRadius: 10,
+        duration: const Duration(seconds: 3),
+      );
       Get.offAll(() => AuthCheck());
     });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Google Sign-In clicked')),
-    );
   }
 
   void togglePassword() {
