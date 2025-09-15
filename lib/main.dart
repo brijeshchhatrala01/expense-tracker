@@ -1,3 +1,4 @@
+import 'package:expence_tracker/constant/colorsfile.dart';
 import 'package:expence_tracker/screens/homescreen/homescreen.dart';
 import 'package:expence_tracker/screens/loginscreen/loginscreen.dart';
 import 'package:expence_tracker/screens/splashscreen/splashscreen.dart';
@@ -27,6 +28,12 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           title: 'Expense Tracker App',
           debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            scaffoldBackgroundColor: kWhiteColor,
+            appBarTheme: AppBarTheme(
+              backgroundColor: kWhiteColor
+            )
+          ),
           home: SplashScreen(),
         );
       },

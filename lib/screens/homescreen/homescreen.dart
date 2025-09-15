@@ -1,3 +1,4 @@
+import 'package:expence_tracker/controllers/navcontroller.dart';
 import 'package:expence_tracker/controllers/walletcontroller.dart';
 import 'package:expence_tracker/constant/colorsfile.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class HomeScreen extends StatelessWidget {
 
   final WalletController walletController = Get.put(WalletController());
   final controller = Get.put(HomeController()); // Inject Controller
+  final navController = Get.find<TabControllerX>();
 
   @override
   Widget build(BuildContext context) {
@@ -199,15 +201,23 @@ class HomeScreen extends StatelessWidget {
                   // Transactions Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         "Transactions History",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text("See all", style: TextStyle(color: Colors.teal)),
+                      InkWell(
+                        onTap: () {
+                          navController.changeTab(2);
+                        },
+                        child: const Text(
+                          "See all",
+                          style: TextStyle(color: Colors.teal),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),

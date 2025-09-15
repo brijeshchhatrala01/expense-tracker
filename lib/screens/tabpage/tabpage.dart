@@ -1,40 +1,37 @@
-import 'package:expence_tracker/constant/icons.dart';
-import 'package:expence_tracker/screens/homescreen/homescreen.dart';
-import 'package:expence_tracker/screens/profilescreen/profilescreen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
+import '../../constant/icons.dart';
+import '../../controllers/navcontroller.dart';
 import '../../widgets/custombottomnav.dart';
 import '../barchartscreen/barchartscreen.dart';
+import '../homescreen/homescreen.dart';
+import '../profilescreen/profilescreen.dart';
 import '../walletscreen/walletscreen.dart';
 
-class TabPage extends StatefulWidget {
-  const TabPage({super.key});
+class TabPage extends StatelessWidget {
+   TabPage({super.key});
+  final tabControllerX = Get.put(TabControllerX());
 
-  @override
-  State<TabPage> createState() => _TabPageState();
-}
+  final List<Widget> _pages = [
+    HomeScreen(),
+    BarChartScreen(),
+    WalletScreen(),
+    ProfileScreen(),
+  ];
 
-class _TabPageState extends State<TabPage> {
-  int _selectedIndex = 0;
 
-
-  final List<Widget> _pages = [HomeScreen(), BarChartScreen(), WalletScreen(), ProfileScreen()];
-
-  void _onTabSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_selectedIndex],
+    return Obx(() => Scaffold(
+      body: _pages[tabControllerX.selectedIndex.value],
       bottomNavigationBar: CustomBottomNavBar(
         icons: iconsList,
-        selectedIndex: _selectedIndex,
-        onTap: _onTabSelected,
+        selectedIndex: tabControllerX.selectedIndex.value,
+        onTap: tabControllerX.changeTab,
       ),
-    );
+    ));
   }
 }

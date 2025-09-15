@@ -155,6 +155,7 @@ class WalletScreen extends StatelessWidget {
                       bool isIncome = (tx["type"].toString().toLowerCase() == "income");
 
                       return Card(
+                        color: kWhiteColor,
                         margin: const EdgeInsets.symmetric(vertical: 6),
                         child: ListTile(
                           leading: CircleAvatar(

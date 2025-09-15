@@ -14,7 +14,7 @@ class AuthCheck extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return const TabPage();
+            return TabPage();
           } else {
             return  LoginScreen();
           }
