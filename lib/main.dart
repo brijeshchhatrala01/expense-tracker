@@ -30,9 +30,14 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             scaffoldBackgroundColor: kWhiteColor,
-            appBarTheme: AppBarTheme(
-              backgroundColor: kWhiteColor
-            )
+            // appBarTheme: AppBarTheme(
+            //   backgroundColor: kBlackColor,
+            //   titleTextStyle: TextStyle(
+            //     fontFamily: 'Montserrat-Regular',
+            //     fontWeight: FontWeight.w600,
+            //     fontSize: 22,
+            //   ),
+            // )
           ),
           home: SplashScreen(),
         );

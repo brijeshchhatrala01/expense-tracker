@@ -7,10 +7,13 @@ import 'package:get/get.dart';
 import '../../controllers/homescreencontroller.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+   HomeScreen({super.key});
 
   final WalletController walletController = Get.put(WalletController());
-  final controller = Get.put(HomeController()); // Inject Controller
+
+  final controller = Get.put(HomeController());
+
+ // Inject Controller
   final navController = Get.find<TabControllerX>();
 
   @override
@@ -20,10 +23,10 @@ class HomeScreen extends StatelessWidget {
         slivers: [
           // AppBar with rounded bottom
           SliverAppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: kWhiteColor,
             elevation: 0,
             expandedHeight: 310,
-            floating: true,
+            floating: false,
             pinned: true,
             centerTitle: true,
             title: const Text(
@@ -36,6 +39,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             flexibleSpace: FlexibleSpaceBar(
+              collapseMode: CollapseMode.parallax, // ✅ prevent collapsing
               background: Container(
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(

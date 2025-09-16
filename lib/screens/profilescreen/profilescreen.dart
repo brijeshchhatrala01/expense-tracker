@@ -1,4 +1,5 @@
 import 'package:expence_tracker/constant/colorsfile.dart';
+import 'package:expence_tracker/firebase_service/firebase_auth/authentication_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -117,6 +118,14 @@ class ProfileScreen extends StatelessWidget {
               svgAsset: 'assets/svgIcons/customer-support.svg',
               title: 'Help & Support',
             ),
+            10.verticalSpace,
+            ProfileRow(
+              svgAsset: 'assets/svgIcons/customer-support.svg',
+              title: 'Logout',
+              onTap: () {
+                AuthenticationService().logoutUser();
+              },
+            ),
             20.verticalSpace,
           ],
         );
@@ -128,41 +137,54 @@ class ProfileScreen extends StatelessWidget {
 class ProfileRow extends StatelessWidget {
   final String title;
   final String svgAsset;
+  final VoidCallback? onTap; // ✅ added callback
+
   const ProfileRow({
-    super.key, required this.title, required this.svgAsset,
+    super.key,
+    required this.title,
+    required this.svgAsset,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Container(
-        padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: kBlackColor,
-            width: 1,
-          )
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            SvgPicture.asset(
-              svgAsset,
-              height: 30,
-              width: 30,
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+      child: InkWell(
+        onTap: onTap, // ✅ trigger callback on tap
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: kBlackColor,
+              width: 1,
             ),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-                fontFamily: 'Montserrat-SemiBold',
-                color: kBlackColor,
+          ),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                svgAsset,
+                height: 24,
+                width: 24,
               ),
-            ),
-          ],
+              const SizedBox(width: 16), // spacing between icon & text
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Montserrat-SemiBold',
+                    color: kBlackColor,
+                  ),
+                ),
+              ),
+              // Optional: you can add an arrow icon at end if needed
+              // Icon(Icons.arrow_forward_ios, size: 16, color: kBlackColor),
+            ],
+          ),
         ),
       ),
     );
