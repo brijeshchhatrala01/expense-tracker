@@ -75,6 +75,8 @@ class AddIncomeController extends GetxController {
         "timestamp": FieldValue.serverTimestamp(),
       });
 
+      Get.back(); // go back after saving
+
       Get.snackbar(
         "Success",
         "Income added successfully!",
@@ -90,7 +92,6 @@ class AddIncomeController extends GetxController {
       selectedCategory.value = "";
       selectedDate.value = DateTime.now();
 
-      Get.back(); // go back after saving
     } catch (e) {
       Get.snackbar(
         "Error",

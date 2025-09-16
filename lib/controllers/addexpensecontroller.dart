@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../firebase_service/firebase_auth/authentication_service.dart';
 import 'walletcontroller.dart';
 
 class AddExpenseController extends GetxController {
+  // Form key
+  final formKey = GlobalKey<FormState>();
+
   // Controllers
   final amountController = TextEditingController();
   final noteController = TextEditingController();
@@ -16,8 +18,46 @@ class AddExpenseController extends GetxController {
   var selectedPayment = "".obs;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  var categories = <Map<String, dynamic>>[].obs;
 
-  // Pick Date
+  @override
+  void onInit() {
+    super.onInit();
+    fetchCategories(); // fetch when screen opens
+  }
+
+
+  // ========== Category Management ==========
+  Future<void> fetchCategories() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final snapshot = await _firestore
+        .collection("users")
+        .doc(user.uid)
+        .collection("categories")
+        .get();
+
+    categories.value = snapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  Future<void> addCategory(String name, String emoji) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    await _firestore
+        .collection("users")
+        .doc(user.uid)
+        .collection("categories")
+        .add({
+      "name": name,
+      "emoji": emoji,
+    });
+
+    await fetchCategories();
+  }
+
+  // ========== Date Picker ==========
   Future<void> pickDate(BuildContext context, Color primaryColor) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -28,9 +68,9 @@ class AddExpenseController extends GetxController {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: primaryColor, // header, selected date
-              onPrimary: Colors.white, // text color on primary
-              onSurface: Colors.black, // body text color
+              primary: primaryColor,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
             ),
             dialogBackgroundColor: Colors.white,
           ),
@@ -40,12 +80,11 @@ class AddExpenseController extends GetxController {
     );
 
     if (picked != null) {
-      dateController.text =
-      "${picked.day}/${picked.month}/${picked.year}";
+      dateController.text = "${picked.day}/${picked.month}/${picked.year}";
     }
   }
 
-  // Save Expense
+  // ========== Expense Save ==========
   Future<void> saveExpense() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -54,9 +93,27 @@ class AddExpenseController extends GetxController {
         return;
       }
 
-      double amount = double.tryParse(amountController.text.trim()) ?? 0.0;
+      // if (!formKey.currentState!.validate()) return;
 
-      // Save expense to Firestore
+      double amount = double.tryParse(amountController.text.trim()) ?? 0.0;
+      String category = selectedCategory.value;
+      String paymentMethod = selectedPayment.value;
+      String note = noteController.text.trim();
+      String date = dateController.text.trim();
+      Timestamp timestamp = Timestamp.now(); // temp until server sets it
+
+      // /// 🔹 Print all values before saving
+      // print("======== EXPENSE DEBUG ========");
+      // print("User ID       : ${user.uid}");
+      // print("Type          : expense");
+      // print("Amount        : $amount");
+      // print("Category      : $category");
+      // print("PaymentMethod : $paymentMethod");
+      // print("Note          : $note");
+      // print("Date (string) : $date");
+      // print("Timestamp     : $timestamp (will be serverTimestamp)");
+      // print("================================");
+      //
       await _firestore
           .collection("users")
           .doc(user.uid)
@@ -64,18 +121,19 @@ class AddExpenseController extends GetxController {
           .add({
         "type": "expense",
         "amount": amount,
-        "category": selectedCategory.value,
-        "paymentMethod": selectedPayment.value,
-        "note": noteController.text.trim(),
-        "date": dateController.text.trim(),
+        "category": category,
+        "paymentMethod": paymentMethod,
+        "note": note,
+        "date": date,
         "timestamp": FieldValue.serverTimestamp(),
       });
 
-      // Update Wallet balance
+      // Wallet update
       final walletController = Get.find<WalletController>();
       walletController.totalBalance.value -= amount;
 
-      // Success snackbar
+      Get.back();
+      // Success
       Get.snackbar(
         "Success",
         "Expense added successfully!",
@@ -84,18 +142,29 @@ class AddExpenseController extends GetxController {
         colorText: Colors.white,
       );
 
-      // Clear fields
-      amountController.clear();
-      noteController.clear();
-      dateController.clear();
-      selectedCategory.value = "";
-      selectedPayment.value = "";
-
-      // Go back
-      Get.back();
+      clearFields();
 
     } catch (e) {
       Get.snackbar("Error", "Failed to save expense: $e");
     }
+  }
+
+  // ========== Helpers ==========
+  void clearFields() {
+    amountController.clear();
+    noteController.clear();
+    dateController.clear();
+    selectedCategory.value = "";
+    selectedPayment.value = "";
+  }
+
+  InputDecoration inputDecoration(String label, {IconData? icon, Color color = Colors.black}) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: icon != null ? Icon(icon, color: color) : null,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
   }
 }

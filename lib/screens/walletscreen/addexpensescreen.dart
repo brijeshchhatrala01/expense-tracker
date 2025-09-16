@@ -111,33 +111,47 @@ class AddExpenseScreen extends StatelessWidget {
                       const SizedBox(height: 16),
 
                       // Category
-                      Obx(() => DropdownButtonFormField<String>(
-                        decoration: _inputDecoration("Category", icon: CupertinoIcons.list_bullet),
-                        value: controller.selectedCategory.value.isEmpty
-                            ? null
-                            : controller.selectedCategory.value,
-                        items: const [
-                          DropdownMenuItem(value: "Home", child: Text("🏠 Home")),
-                          DropdownMenuItem(value: "Utilities", child: Text("💡 Utilities")),
-                          DropdownMenuItem(value: "Groceries", child: Text("🛒 Groceries")),
-                          DropdownMenuItem(value: "Maintenance", child: Text("🛠 Maintenance")),
-                          DropdownMenuItem(value: "Furniture", child: Text("🪑 Furniture")),
-                          DropdownMenuItem(value: "Appliances", child: Text("📺 Appliances")),
-                          DropdownMenuItem(value: "Cleaning", child: Text("🧹 Cleaning")),
-                          DropdownMenuItem(value: "Internet", child: Text("🌐 Internet")),
-                          DropdownMenuItem(value: "Water Bill", child: Text("🚰 Water Bill")),
-                          DropdownMenuItem(value: "Gas Bill", child: Text("⛽ Gas Bill")),
-                        ],
-                        onChanged: (value) {
-                          controller.selectedCategory.value = value ?? "";
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Select category";
-                          }
-                          return null;
-                        },
-                      )),
+                      Obx(() {
+                        final categoryItems = controller.categories
+                            .map((cat) => DropdownMenuItem<String>(
+                          value: cat["name"].toString(),
+                          child: Text("${cat["emoji"]} ${cat["name"]}"),
+                        ))
+                            .toList();
+
+                        // Add "Add New" option at the bottom
+                        categoryItems.add(
+                          const DropdownMenuItem<String>(
+                            value: "add_new",
+                            child: Text("➕ Add New Category"),
+                          ),
+                        );
+
+                        // Ensure the selected value is valid
+                        final selectedValue = controller.selectedCategory.value;
+                        final isValidValue = categoryItems.any((item) => item.value == selectedValue);
+
+                        return DropdownButtonFormField<String>(
+                          decoration: _inputDecoration("Category", icon: CupertinoIcons.list_bullet),
+                          value: isValidValue ? selectedValue : null, // 👈 fix crash
+                          items: categoryItems,
+                          onChanged: (value) {
+                            if (value == "add_new") {
+                              _showAddCategoryDialog(context, controller);
+                            } else {
+                              controller.selectedCategory.value = value ?? "";
+                              print("SC : ${controller.selectedCategory.value}");
+                            }
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Select category";
+                            }
+                            return null;
+                          },
+                        );
+                      }),
+
                       const SizedBox(height: 16),
 
                       // Payment Method
@@ -202,6 +216,7 @@ class AddExpenseScreen extends StatelessWidget {
         child: CustomContainerButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
+              print('Form Validate');
               controller.saveExpense();
             }
           },
@@ -216,6 +231,52 @@ class AddExpenseScreen extends StatelessWidget {
           buttonTextColor: kWhiteColor,
         ),
       ),
+    );
+  }
+
+  void _showAddCategoryDialog(BuildContext context, AddExpenseController controller) {
+    final nameController = TextEditingController();
+    final emojiController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: kWhiteColor,
+          title: const Text("Add New Category"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: emojiController,
+                decoration: const InputDecoration(labelText: "Emoji (e.g., 🛍)"),
+              ),
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: "Category Name"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (nameController.text.trim().isNotEmpty) {
+                  await controller.addCategory(
+                    nameController.text.trim(),
+                    emojiController.text.trim().isEmpty ? "📂" : emojiController.text.trim(),
+                  );
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

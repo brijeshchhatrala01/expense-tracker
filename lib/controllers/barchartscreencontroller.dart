@@ -1,6 +1,7 @@
 // controllers/barchartscreencontroller.dart
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -38,47 +39,45 @@ class BarChartController extends GetxController {
   }
 
 
-  void fetchTransactions() async {
-    final userId = "nseamSbRYxW680v6vZSq7UBNzoL2";
-    // Replace with dynamic user UID
+  void fetchTransactions() {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
 
-    print("UID in FT : ${userId}");
-    List<TransactionModel> temp = [];
-
-    // Fetch expenses
-    final transactionsSnap = await _firestore
+    _firestore
         .collection('users')
-        .doc(userId)
+        .doc(uid)
         .collection('transactions')
-        .get();
+        .snapshots()
+        .listen((transactionsSnap) {
+      final temp = transactionsSnap.docs
+          .map((doc) => TransactionModel.fromFirestore(doc))
+          .toList();
 
-    print(transactionsSnap.docs.toString());
-    temp.addAll(transactionsSnap.docs.map((doc) {
-      return TransactionModel.fromFirestore(doc); // already has type = "expense"
-    }));
+      allTransactions.value = temp;
+      applyFilters();
+    });
 
-    // Fetch incomes (force type = "income")
-    final incomeSnap = await _firestore
+    _firestore
         .collection('users')
-        .doc(userId)
+        .doc(uid)
         .collection('income')
-        .get();
+        .snapshots()
+        .listen((incomeSnap) {
+      final incomeList = incomeSnap.docs.map((doc) {
+        final model = TransactionModel.fromFirestore(doc);
+        return TransactionModel(
+          amount: model.amount,
+          category: model.category,
+          note: model.note,
+          type: "income",
+          paymentMethod: model.paymentMethod,
+          date: model.date,
+          timestamp: model.timestamp,
+        );
+      }).toList();
 
-    temp.addAll(incomeSnap.docs.map((doc) {
-      final model = TransactionModel.fromFirestore(doc);
-      return TransactionModel(
-        amount: model.amount,
-        category: model.category,
-        note: model.note,
-        type: "income", // ✅ force income
-        paymentMethod: model.paymentMethod,
-        date: model.date,
-        timestamp: model.timestamp,
-      );
-    }));
-
-    allTransactions.value = temp;
-    applyFilters();
+      allTransactions.addAll(incomeList);
+      applyFilters();
+    });
   }
 
   void setTimeFilter(String filter) {
