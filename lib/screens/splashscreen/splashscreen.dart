@@ -1,8 +1,9 @@
 import 'package:expence_tracker/constant/colorsfile.dart';
 import 'package:expence_tracker/screens/loginscreen/loginscreen.dart';
+import 'package:expence_tracker/screens/tabpage/tabpage.dart'; // Import your TabPage
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -10,7 +11,15 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 3), () {
-      Get.off(() => LoginScreen());
+      // Check if user already logged in
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // User is logged in → go to TabPage
+        Get.off(() =>  TabPage());
+      } else {
+        // User not logged in → go to LoginScreen
+        Get.off(() => LoginScreen());
+      }
     });
 
     return Scaffold(

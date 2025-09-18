@@ -100,7 +100,7 @@ class AddExpenseController extends GetxController {
       String paymentMethod = selectedPayment.value;
       String note = noteController.text.trim();
       String date = dateController.text.trim();
-      Timestamp timestamp = Timestamp.now(); // temp until server sets it
+      // Timestamp timestamp = Timestamp.now(); // temp until server sets it
 
       // /// 🔹 Print all values before saving
       // print("======== EXPENSE DEBUG ========");

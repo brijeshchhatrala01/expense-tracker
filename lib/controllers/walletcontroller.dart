@@ -7,6 +7,8 @@ class WalletController extends GetxController {
   var totalBalance = 0.0.obs;
   var selectedIndex = 0.obs;
   var transactions = [].obs;
+  var upcomingBills = <Map<String, dynamic>>[].obs;
+
 
   final uid = FirebaseAuth.instance.currentUser?.uid;
 
@@ -15,6 +17,31 @@ class WalletController extends GetxController {
     super.onInit();
     fetchBalance();
     fetchTransactions();
+    fetchUpcomingBills();
+  }
+
+  /// ✅ Fetch Upcoming Bills
+  void fetchUpcomingBills() {
+    if (uid == null) return;
+
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(uid)
+        .collection("bills")
+        .orderBy("dueDate")
+        .snapshots()
+        .listen((snapshot) {
+      upcomingBills.value = snapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          "id": doc.id,
+          "title": data["title"] ?? "",
+          "amount": (data["amount"] as num?)?.toDouble() ?? 0.0,
+          "note": data["note"] ?? "",
+          "dueDate": (data["dueDate"] as Timestamp).toDate(),
+        };
+      }).toList();
+    });
   }
 
   void changeTab(int index) {

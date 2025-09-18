@@ -61,7 +61,7 @@ class AddExpenseScreen extends StatelessWidget {
           onPressed: () => Get.back(),
           icon: const Icon(
             CupertinoIcons.back,
-            color: Colors.black,
+            color: Colors.white,
           ),
         ),
         title: const Text(
@@ -81,6 +81,7 @@ class AddExpenseScreen extends StatelessWidget {
           child: Column(
             children: [
               Card(
+                color: kWhiteColor,
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -111,52 +112,55 @@ class AddExpenseScreen extends StatelessWidget {
                       const SizedBox(height: 16),
 
                       // Category
-                      Obx(() {
-                        final categoryItems = controller.categories
-                            .map((cat) => DropdownMenuItem<String>(
-                          value: cat["name"].toString(),
-                          child: Text("${cat["emoji"]} ${cat["name"]}"),
-                        ))
-                            .toList();
+                    Obx(() {
+                      final categoryItems = controller.categories
+                          .map((cat) => DropdownMenuItem<String>(
+                        value: cat["name"].toString(),
+                        child: Text("${cat["emoji"]} ${cat["name"]}"),
+                      ))
+                          .toList();
 
-                        // Add "Add New" option at the bottom
-                        categoryItems.add(
-                          const DropdownMenuItem<String>(
-                            value: "add_new",
-                            child: Text("➕ Add New Category"),
-                          ),
-                        );
+                      categoryItems.add(
+                        const DropdownMenuItem<String>(
+                          value: "add_new",
+                          child: Text("➕ Add New Category"),
+                        ),
+                      );
 
-                        // Ensure the selected value is valid
-                        final selectedValue = controller.selectedCategory.value;
-                        final isValidValue = categoryItems.any((item) => item.value == selectedValue);
+                      final selectedValue = controller.selectedCategory.value;
+                      final isValidValue = categoryItems.any((item) => item.value == selectedValue);
 
-                        return DropdownButtonFormField<String>(
-                          decoration: _inputDecoration("Category", icon: CupertinoIcons.list_bullet),
-                          value: isValidValue ? selectedValue : null, // 👈 fix crash
-                          items: categoryItems,
-                          onChanged: (value) {
-                            if (value == "add_new") {
-                              _showAddCategoryDialog(context, controller);
-                            } else {
-                              controller.selectedCategory.value = value ?? "";
-                              print("SC : ${controller.selectedCategory.value}");
-                            }
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Select category";
-                            }
-                            return null;
-                          },
-                        );
-                      }),
+                      return DropdownButtonFormField<String>(
+                        value: isValidValue ? selectedValue : null,
+                        items: categoryItems,
+                        onChanged: (value) {
+                          if (value == "add_new") {
+                            _showAddCategoryDialog(context, controller);
+                          } else {
+                            controller.selectedCategory.value = value ?? "";
+                          }
+                        },
+                        decoration: _inputDecoration("Category", icon: CupertinoIcons.list_bullet),
+                        dropdownColor: kWhiteColor,
+                        borderRadius: BorderRadius.circular(12),
+                        style: const TextStyle(
+                          fontFamily: 'Montserrat-Regular',
+                          fontSize: 14,
+                          color: kBlackColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return "Select category";
+                          return null;
+                        },
+                      );
+                    }),
 
-                      const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                       // Payment Method
-                      Obx(() => DropdownButtonFormField<String>(
-                        decoration: _inputDecoration("Payment Method", icon: CupertinoIcons.creditcard),
+                    Obx(() {
+                      return DropdownButtonFormField<String>(
                         value: controller.selectedPayment.value.isEmpty
                             ? null
                             : controller.selectedPayment.value,
@@ -168,8 +172,18 @@ class AddExpenseScreen extends StatelessWidget {
                         onChanged: (value) {
                           controller.selectedPayment.value = value ?? "";
                         },
-                      )),
-                      const SizedBox(height: 16),
+                        decoration: _inputDecoration("Payment Method", icon: CupertinoIcons.creditcard),
+                        dropdownColor: kWhiteColor,
+                        borderRadius: BorderRadius.circular(12),
+                        style: const TextStyle(
+                          fontFamily: 'Montserrat-Regular',
+                          fontSize: 14,
+                          color: kBlackColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 16),
 
                       // Note
                       TextFormField(
@@ -222,7 +236,7 @@ class AddExpenseScreen extends StatelessWidget {
           },
           buttonHeight: 60,
           buttonWidth: double.infinity,
-          buttonColor: Colors.redAccent, // Different from Income
+          buttonColor: kBlackColor, // Different from Income
           buttonRadius: 12,
           buttonText: 'Add Expense',
           buttonTextFontWeight: FontWeight.w600,
@@ -238,43 +252,124 @@ class AddExpenseScreen extends StatelessWidget {
     final nameController = TextEditingController();
     final emojiController = TextEditingController();
 
+    InputDecoration _dialogInputDecoration(String label) {
+      return InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(
+          fontFamily: 'Montserrat-Regular',
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: kBlackColor.withOpacity(0.8),
+        ),
+        hintStyle: TextStyle(
+          fontFamily: 'Montserrat-Regular',
+          fontSize: 13,
+          color: kBlackColor.withOpacity(0.6),
+        ),
+        errorStyle: TextStyle(
+          fontFamily: 'Montserrat-Regular',
+          fontSize: 12,
+          color: Colors.red,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: kBlackColor, width: 1.2),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: kBlackColor, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 1.2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        ),
+      );
+    }
+
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
+        return Dialog(
           backgroundColor: kWhiteColor,
-          title: const Text("Add New Category"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: emojiController,
-                decoration: const InputDecoration(labelText: "Emoji (e.g., 🛍)"),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Add New Category",
+                    style: TextStyle(
+                      fontFamily: 'Montserrat-Regular',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Emoji Field
+                  TextField(
+                    controller: emojiController,
+                    cursorColor: kBlackColor,
+                    decoration: _dialogInputDecoration("Emoji (e.g., 🛍)"),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Name Field
+                  TextField(
+                    controller: nameController,
+                    cursorColor: kBlackColor,
+                    decoration: _dialogInputDecoration("Category Name"),
+                  ),
+                  const SizedBox(height: 20),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Cancel",style: TextStyle(color: kBlackColor),),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: kBlackColor,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (nameController.text.trim().isNotEmpty) {
+                            await controller.addCategory(
+                              nameController.text.trim(),
+                              emojiController.text.trim().isEmpty ? "📂" : emojiController.text.trim(),
+                            );
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text(
+                          "Save",
+                          style: TextStyle(
+                            fontFamily: 'Montserrat-Regular',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: "Category Name"),
-              ),
-            ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (nameController.text.trim().isNotEmpty) {
-                  await controller.addCategory(
-                    nameController.text.trim(),
-                    emojiController.text.trim().isEmpty ? "📂" : emojiController.text.trim(),
-                  );
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text("Save"),
-            ),
-          ],
         );
       },
     );

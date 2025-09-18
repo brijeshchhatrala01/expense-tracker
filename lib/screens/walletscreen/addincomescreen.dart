@@ -64,10 +64,7 @@ class AddIncomeScreen extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: const Icon(
-            CupertinoIcons.back,
-            color: Colors.black,
-          ),
+          icon: const Icon(CupertinoIcons.back, color: Colors.white),
         ),
         title: const Text(
           'Add Income',
@@ -86,6 +83,7 @@ class AddIncomeScreen extends StatelessWidget {
           child: Column(
             children: [
               Card(
+                color: kWhiteColor,
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -116,31 +114,48 @@ class AddIncomeScreen extends StatelessWidget {
                       const SizedBox(height: 16),
 
                       // Category
-                      Obx(() => DropdownButtonFormField<String>(
-                        decoration: _inputDecoration("Category"),
-                        value: controller.selectedCategory.value.isEmpty
-                            ? null
-                            : controller.selectedCategory.value,
-                        items: const [
+                      Obx(() {
+                        final categoryItems = const [
                           DropdownMenuItem(
-                              value: "Salary", child: Text("Salary")),
+                            value: "Salary",
+                            child: Text("Salary"),
+                          ),
                           DropdownMenuItem(
-                              value: "Freelance",
-                              child: Text("Freelance")),
+                            value: "Freelance",
+                            child: Text("Freelance"),
+                          ),
                           DropdownMenuItem(
-                              value: "Investment",
-                              child: Text("Investment")),
-                        ],
-                        onChanged: (value) {
-                          controller.selectedCategory.value = value ?? "";
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Select category";
-                          }
-                          return null;
-                        },
-                      )),
+                            value: "Investment",
+                            child: Text("Investment"),
+                          ),
+                        ];
+
+                        return DropdownButtonFormField<String>(
+                          value: controller.selectedCategory.value.isEmpty
+                              ? null
+                              : controller.selectedCategory.value,
+                          items: categoryItems,
+                          onChanged: (value) {
+                            controller.selectedCategory.value = value ?? "";
+                          },
+                          decoration: _inputDecoration("Category"),
+                          dropdownColor: kWhiteColor,
+                          // Popup menu color
+                          borderRadius: BorderRadius.circular(12),
+                          // Rounded popup
+                          style: const TextStyle(
+                            fontFamily: 'Montserrat-Regular',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: kBlackColor,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty)
+                              return "Select category";
+                            return null;
+                          },
+                        );
+                      }),
                       const SizedBox(height: 16),
 
                       // Note
@@ -164,8 +179,7 @@ class AddIncomeScreen extends StatelessWidget {
                           "Date",
                           icon: CupertinoIcons.calendar,
                         ),
-                        onTap: () =>
-                            controller.pickDate(context, kBlackColor),
+                        onTap: () => controller.pickDate(context, kBlackColor),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return "Select date";
@@ -192,7 +206,8 @@ class AddIncomeScreen extends StatelessWidget {
             }
           },
           buttonHeight: 60,
-          buttonWidth: double.infinity, // full width
+          buttonWidth: double.infinity,
+          // full width
           buttonColor: kBlackColor,
           buttonRadius: 12,
           buttonText: 'Save Income',

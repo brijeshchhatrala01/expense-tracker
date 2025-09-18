@@ -5,15 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/homescreencontroller.dart';
+import '../notification/notificationlist.dart';
 
 class HomeScreen extends StatelessWidget {
-   HomeScreen({super.key});
+  HomeScreen({super.key});
 
   final WalletController walletController = Get.put(WalletController());
 
   final controller = Get.put(HomeController());
 
- // Inject Controller
+  // Inject Controller
   final navController = Get.find<TabControllerX>();
 
   @override
@@ -67,6 +68,7 @@ class HomeScreen extends StatelessWidget {
                                 Text(
                                   controller.greeting.value,
                                   style: const TextStyle(
+                                    fontFamily: 'Montserrat-Regular',
                                     color: Colors.white70,
                                     fontSize: 14,
                                   ),
@@ -77,13 +79,22 @@ class HomeScreen extends StatelessWidget {
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,
+                                    fontFamily: 'Montserrat-Regular',
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const Icon(Icons.notifications, color: Colors.white),
+                          InkWell(
+                            onTap: () {
+                              Get.to(() => NotificationListScreen());
+                            },
+                            child: Icon(
+                              Icons.notifications,
+                              color: Colors.white,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -138,6 +149,8 @@ class HomeScreen extends StatelessWidget {
                                             "Income",
                                             style: TextStyle(
                                               color: Colors.black54,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: 'Montserrat-Regular',
                                               fontSize: 12,
                                             ),
                                           ),
@@ -145,6 +158,7 @@ class HomeScreen extends StatelessWidget {
                                             "₹ ${walletController.lastIncome.toStringAsFixed(2)}",
                                             style: const TextStyle(
                                               color: Colors.black,
+                                              fontFamily: 'Montserrat-Regular',
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -168,6 +182,8 @@ class HomeScreen extends StatelessWidget {
                                             "Expenses",
                                             style: TextStyle(
                                               color: Colors.black54,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: 'Montserrat-Regular',
                                               fontSize: 12,
                                             ),
                                           ),
@@ -175,6 +191,7 @@ class HomeScreen extends StatelessWidget {
                                             "₹ ${walletController.lastExpense.toStringAsFixed(2)}",
                                             style: const TextStyle(
                                               color: Colors.black,
+                                              fontFamily: 'Montserrat-Regular',
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -202,14 +219,16 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 20),
                   // Transactions Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        "Transactions History",
+                        "Latest Transactions",
                         style: TextStyle(
                           fontSize: 18,
+                          fontFamily: 'Montserrat-Regular',
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -219,12 +238,16 @@ class HomeScreen extends StatelessWidget {
                         },
                         child: const Text(
                           "See all",
-                          style: TextStyle(color: Colors.teal),
+                          style: TextStyle(
+                            color: kBlackColor,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Montserrat-Regular',
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  // const SizedBox(height: 10),
 
                   // ✅ Dynamic Transactions List
                   Obx(() {
@@ -232,7 +255,14 @@ class HomeScreen extends StatelessWidget {
                       return const Center(
                         child: Padding(
                           padding: EdgeInsets.all(20.0),
-                          child: Text("No transactions yet"),
+                          child: Text(
+                            "No transactions yet",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Montserrat-Regular',
+                            ),
+                          ),
                         ),
                       );
                     }
@@ -240,7 +270,9 @@ class HomeScreen extends StatelessWidget {
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: walletController.transactions.length,
+                      itemCount: walletController.transactions.isNotEmpty
+                          ? 3
+                          : walletController.transactions.length,
                       itemBuilder: (context, index) {
                         final tx = walletController.transactions[index];
                         final isIncome =
@@ -320,9 +352,16 @@ class TransactionTile extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
+                    fontFamily: 'Montserrat-Regular',
                   ),
                 ),
-                Text(date, style: TextStyle(color: Colors.grey[600])),
+                Text(
+                  date,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontFamily: 'Montserrat-Regular',
+                  ),
+                ),
               ],
             ),
           ),
@@ -331,6 +370,7 @@ class TransactionTile extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              fontFamily: 'Montserrat-Regular',
               color: amount.contains("-") ? Colors.red : Colors.green,
             ),
           ),

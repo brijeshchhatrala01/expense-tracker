@@ -44,9 +44,20 @@ class AuthenticationService {
   }
   //logout
   Future<void> logoutUser() async {
-    googleSignIn.signOut();
-    return _firebaseAuth.signOut();
+    try {
+      // Check if Google user is signed in
+      if (await googleSignIn.isSignedIn()) {
+        await googleSignIn.disconnect(); // clears cached account
+        await googleSignIn.signOut();
+      }
+
+      // Firebase sign out
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      print("Logout error: $e");
+    }
   }
+
 
   //allow existing user to signin
   Future<UserCredential> signInUser(String email, String password) async {

@@ -1,4 +1,5 @@
 import 'package:expence_tracker/screens/walletscreen/addexpensescreen.dart';
+import 'package:expence_tracker/screens/walletscreen/upcomingbills.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -43,15 +44,17 @@ class WalletScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Obx(() => Text(
-                    'Total Balance : ₹${controller.totalBalance.value.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: kWhiteColor,
-                      fontFamily: 'Montserrat-Regular',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 22,
+                  Obx(
+                    () => Text(
+                      'Total Balance : ₹${controller.totalBalance.value.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: kWhiteColor,
+                        fontFamily: 'Montserrat-Regular',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 22,
+                      ),
                     ),
-                  )),
+                  ),
                   20.verticalSpace,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -77,7 +80,7 @@ class WalletScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -102,10 +105,36 @@ class WalletScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                               ),
-                            )
+                            ),
                           ],
                         ),
-                      )
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Get.to(() => UpcomingBillsScreen());
+                        },
+                        child: Column(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/svgIcons/upcoming.svg',
+                              // <- add a calendar or reminder icon in assets/svgIcons
+                              height: 50,
+                              width: 50,
+                              color: kWhiteColor,
+                            ),
+                            10.verticalSpace,
+                            Text(
+                              'Bills',
+                              style: TextStyle(
+                                color: kWhiteColor,
+                                fontFamily: 'Montserrat-Regular',
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -152,63 +181,87 @@ class WalletScreen extends StatelessWidget {
                     itemCount: controller.transactions.length,
                     itemBuilder: (context, index) {
                       final tx = controller.transactions[index];
-                      bool isIncome = (tx["type"].toString().toLowerCase() == "income");
+                      bool isIncome =
+                          (tx["type"].toString().toLowerCase() == "income");
 
                       return Card(
                         color: kWhiteColor,
                         margin: const EdgeInsets.symmetric(vertical: 6),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: isIncome ? Colors.green : Colors.red,
+                            backgroundColor: isIncome
+                                ? Colors.green
+                                : Colors.red,
                             child: Icon(
-                              isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+                              isIncome
+                                  ? Icons.arrow_downward
+                                  : Icons.arrow_upward,
                               color: Colors.white,
                             ),
                           ),
-                          title: Text(
-                            tx["category"],
-                            style: const TextStyle(
-                              fontFamily: 'Montserrat-Regular',
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          title: Text(tx["category"]),
                           subtitle: Text(
                             "${tx["date"].day}/${tx["date"].month}/${tx["date"].year}\n${tx["note"]} (${tx["paymentMethod"]})",
-                            style: const TextStyle(
-                              fontFamily: 'Montserrat-Regular',
-                              fontSize: 12,
-                            ),
                           ),
                           trailing: Text(
                             "₹${tx["amount"].toStringAsFixed(2)}",
                             style: TextStyle(
-                              fontFamily: 'Montserrat-Regular',
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
                               color: isIncome ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       );
                     },
                   );
-
                 } else {
                   // 🔹 Upcoming Bills Tab
-                  return Center(
-                    child: Text(
-                      "Upcoming Bills will appear here",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Montserrat-Regular',
-                        fontWeight: FontWeight.w500,
-                        color: kBlackColor,
+                  if (controller.upcomingBills.isEmpty) {
+                    return Center(
+                      child: Text(
+                        "No upcoming bills",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Montserrat-Regular',
+                          fontWeight: FontWeight.w500,
+                          color: kBlackColor,
+                        ),
                       ),
-                    ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: controller.upcomingBills.length,
+                    itemBuilder: (context, index) {
+                      final bill = controller.upcomingBills[index];
+                      final dueDate = bill["dueDate"] as DateTime;
+
+                      return Card(
+                        color: kWhiteColor,
+                        margin: const EdgeInsets.symmetric(vertical: 6),
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.calendar_today,
+                            color: Colors.orange,
+                          ),
+                          title: Text(bill["title"] ?? "No Title"),
+                          subtitle: Text(
+                            "Due: ${dueDate.day}/${dueDate.month}/${dueDate.year}\n${bill["note"] ?? ""}",
+                          ),
+                          trailing: Text(
+                            "₹${bill["amount"].toStringAsFixed(2)}",
+                            style: const TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 }
               }),
-            )
+            ),
           ],
         ),
       ),

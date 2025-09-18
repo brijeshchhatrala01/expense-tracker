@@ -2,10 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../model/transactionmodel.dart';
 
 class BarChartController extends GetxController {
@@ -105,48 +102,81 @@ class BarChartController extends GetxController {
 
 
 
-  /// 🔹 Generate grouped bars (Revenue + Expenses) per month
-  List<BarChartGroupData> getBarChartData(List<TransactionModel> transactions) {
-    Map<int, double> incomeByMonth = {};
-    Map<int, double> expenseByMonth = {};
 
-    for (var tx in transactions) {
-      int month = tx.timestamp.toDate().month;
+  /// 🔹 Generate grouped bars (Revenue + Expenses) per month
+  /// 🔹 Prepare line chart data based on selected filter
+  /// 🔹 Generate line chart data based on selected filter
+  Map<String, List<_ChartData>> getLineChartData() {
+    Map<int, double> incomeMap = {};
+    Map<int, double> expenseMap = {};
+
+    for (var tx in filteredTransactions) {
+      DateTime date = tx.timestamp.toDate();
+      int keyIndex;
+
+      switch (selectedTimeFilter.value) {
+        case 'Day':
+          keyIndex = date.hour; // 0–23
+          break;
+        case 'Week':
+          keyIndex = date.weekday; // 1–7 (Mon=1, Sun=7)
+          break;
+        case 'Month':
+          keyIndex = date.month; // 1–12 (Jan=1, Dec=12)
+          break;
+        case 'Year':
+          keyIndex = date.year; // group by year
+          break;
+        default:
+          keyIndex = date.month;
+      }
 
       if (tx.type.toLowerCase() == "income") {
-        incomeByMonth[month] = (incomeByMonth[month] ?? 0) + tx.amount;
+        incomeMap[keyIndex] = (incomeMap[keyIndex] ?? 0) + tx.amount;
       } else if (tx.type.toLowerCase() == "expense") {
-        expenseByMonth[month] = (expenseByMonth[month] ?? 0) + tx.amount;
+        expenseMap[keyIndex] = (expenseMap[keyIndex] ?? 0) + tx.amount;
       }
     }
 
-    // Always show all 12 months
-    months.value = List.generate(12, (i) => "${DateTime.now().year}-${i + 1}");
+    // 🔹 Generate full ranges depending on filter
+    int rangeCount;
+    switch (selectedTimeFilter.value) {
+      case 'Day':
+        rangeCount = 24; // 24 hours
+        break;
+      case 'Week':
+        rangeCount = 7; // 7 days
+        break;
+      case 'Month':
+        rangeCount = 12; // 12 months
+        break;
+      case 'Year':
+      // dynamic years based on data
+        final years = allTransactions.map((e) => e.timestamp.toDate().year).toSet().toList()..sort();
+        rangeCount = years.length;
+        break;
+      default:
+        rangeCount = 12;
+    }
 
-    return List.generate(12, (index) {
-      final monthIndex = index + 1; // 1–12
-      final income = incomeByMonth[monthIndex] ?? 0;
-      final expense = expenseByMonth[monthIndex] ?? 0;
-
-      return BarChartGroupData(
-        x: index,
-        barRods: [
-          BarChartRodData(
-            toY: income,
-            color: Colors.blue, // Income
-            width: 14,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          BarChartRodData(
-            toY: expense,
-            color: Colors.red, // Expense
-            width: 14,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ],
-        barsSpace: 6,
-      );
+    final incomeData = List.generate(rangeCount, (i) {
+      int key = (selectedTimeFilter.value == 'Year')
+          ? allTransactions.map((e) => e.timestamp.toDate().year).toSet().toList()[i]
+          : i + (selectedTimeFilter.value == 'Day' ? 0 : 1);
+      return _ChartData(key, incomeMap[key] ?? 0);
     });
+
+    final expenseData = List.generate(rangeCount, (i) {
+      int key = (selectedTimeFilter.value == 'Year')
+          ? allTransactions.map((e) => e.timestamp.toDate().year).toSet().toList()[i]
+          : i + (selectedTimeFilter.value == 'Day' ? 0 : 1);
+      return _ChartData(key, expenseMap[key] ?? 0);
+    });
+
+    return {
+      "income": incomeData,
+      "expense": expenseData,
+    };
   }
 
   /// 🔹 Filter data based on Day / Week / Month / Year
@@ -176,4 +206,9 @@ class BarChartController extends GetxController {
       return inRange; // no type filter here, we want both income & expense
     }).toList();
   }
+}
+class _ChartData {
+  final int index; // x-axis position
+  final double amount;
+  _ChartData(this.index, this.amount);
 }

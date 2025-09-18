@@ -1,5 +1,6 @@
 import 'package:expence_tracker/constant/colorsfile.dart';
 import 'package:expence_tracker/firebase_service/firebase_auth/authentication_service.dart';
+import 'package:expence_tracker/screens/notification/notificationlist.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -64,7 +65,9 @@ class ProfileScreen extends StatelessWidget {
                   top: 20,
                   right: 20,
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Get.to(()=> NotificationListScreen());
+                    },
                     child: SvgPicture.asset(
                       'assets/svgIcons/notification.svg',
                       height: 40,
