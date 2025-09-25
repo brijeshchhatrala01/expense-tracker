@@ -40,5 +40,4 @@ Built with **Firebase** for authentication & data storage, **GetX** for state ma
 - **Auth Methods**: Email/Password, Google Sign-In  
 
 ---
-![alt text](screenshots/addexpensescreen.jpg)
 ![alt text](screenshots/addincomescree.jpg) ![alt text](<screenshots/analytics screen.jpg>) ![alt text](screenshots/homescreen.jpg) ![alt text](screenshots/profilescreen.jpg) ![alt text](<screenshots/wallet screen.jpg>)
