@@ -1,16 +1,44 @@
-# expence_tracker
+# 💰 Expense Tracker App
 
-A new Flutter project.
+A modern **Flutter Expense Tracker** app to manage your incomes, expenses, and upcoming bills.  
+Built with **Firebase** for authentication & data storage, **GetX** for state management, and **Syncfusion Charts** for analytics.  
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✨ Features
 
-A few resources to get you started if this is your first Flutter project:
+- 🔑 **Authentication**
+  - Login with **Email/Password**
+  - Login with **Google Account**
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- 📊 **Expense & Income Tracking**
+  - Add, edit, and delete **income & expense records**
+  - Organize data with **categories & timestamps**
+  - Data stored securely in **Firebase Firestore**
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- 📈 **Analytics Dashboard**
+  - Interactive **Syncfusion Charts**
+  - View reports **Daily, Weekly, Monthly, and Yearly**
+  - Insights for better financial planning
+
+- 🖼 **UI/UX**
+  - **Clean & modern design**
+  - Intuitive navigation
+  - Responsive across devices
+
+- ⚡ **State Management**
+  - Powered by **GetX** for smooth performance
+
+---
+
+## 🛠 Tech Stack
+
+- **Framework**: Flutter  
+- **State Management**: GetX  
+- **Backend/Database**: Firebase (Firestore, Auth)  
+- **Charts & Analytics**: Syncfusion Flutter Charts  
+- **Auth Methods**: Email/Password, Google Sign-In  
+
+---
+![alt text](screenshots/addexpensescreen.jpg)
+![alt text](screenshots/addincomescree.jpg) ![alt text](<screenshots/analytics screen.jpg>) ![alt text](screenshots/homescreen.jpg) ![alt text](screenshots/profilescreen.jpg) ![alt text](<screenshots/wallet screen.jpg>)
